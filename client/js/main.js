@@ -4,23 +4,24 @@ let textMessages = []
 const SERVER_URL = "http://localhost:8000"
 const d = document;
 
-function update_html(url, imageIndex, prompt){
-    fetch(url)
-        .then(response => response.blob())
-        .then(image => {
-                var demoPic = d.getElementById("link-out-pic-"+imageIndex)
-                var imageSrc = URL.createObjectURL(image)  
-                demoPic.download = prompt+".png"
-                demoPic.href = imageSrc
-    })
-}
+// function update_html(url, imageIndex, prompt){
+//     fetch(url)
+//         .then(response => response.blob())
+//         .then(image => {
+//                 var demoPic = d.getElementById("link-out-pic-"+imageIndex)
+//                 var imageSrc = URL.createObjectURL(image)  
+//                 demoPic.download = prompt+".png"
+//                 demoPic.href = imageSrc
+//     })
+// }
 
 function get_image_ai(engine, prompt, called, total_calls) {
     if (called >= total_calls) {
-        const loader = d.getElementById("loader")
-        loader.style.display = "none"
+        turnLoaderOff()
         return;
     }
+
+    updateLoader(called, total_calls)
     
     fetch(SERVER_URL + "/generate-img/", {
         method: 'POST',
@@ -32,8 +33,9 @@ function get_image_ai(engine, prompt, called, total_calls) {
         console.log(url)
         var demoPic = d.getElementById("out-pic-"+called)
         demoPic.src = url
-
-        get_image_ai(engine, prompt, called, total_calls)
+        demoPic.addEventListener("load", () => {
+            get_image_ai(engine, prompt, called, total_calls)
+         })
     })
     .catch(error => {
         // Error occurred during the fetch
@@ -56,20 +58,40 @@ function get_image_ai(engine, prompt, called, total_calls) {
 //     });
 // }
 
+function turnLoaderOn(maxcount) {
+    const loader = d.getElementById("loader-div-id")
+    const loaderStatus = d.getElementById("progress-status")
+    loaderStatus.textContent = "(1/"+maxcount+") "
+    loader.style.display = "flex"
+}
+
+function updateLoader(count, maxcount) {
+    const loaderStatus = d.getElementById("progress-status")
+    loaderStatus.textContent = "("+count+"/"+maxcount+") "
+}
+
+function turnLoaderOff() {
+    const loader = d.getElementById("loader-div-id")
+    loader.style.display = "none"
+}
+
 const askImageAI = d.getElementById("ask-ai")
 askImageAI.addEventListener("submit", (e) => {
     e.preventDefault();
   
     // handle submit
     const engine = d.getElementById("AI-Engine").value
+    const imageCount = d.getElementById("image-count").value
+    if (engine.toLowerCase() == "model" || imageCount.toLowerCase() == "count") {
+        return
+    }
     const prompt = d.getElementById("prompt-input").value
-    const loader = d.getElementById("loader")
-    loader.style.display = "block"
+    turnLoaderOn(imageCount)
 
     console.log("Engine: " + engine)
     console.log("Prompt: " + prompt)
 
-    get_image_ai(engine, prompt, 0, 1)
+    get_image_ai(engine, prompt, 0, imageCount)
 });
 
 // Using fetch

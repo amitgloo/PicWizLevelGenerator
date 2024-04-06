@@ -1,15 +1,14 @@
-import openai
 from settings import API_KEY, CHAT_THEME
+from openai import OpenAI
 
-openai.api_key = API_KEY
+client = OpenAI(api_key=API_KEY)
+
 
 def get_chat_gpt_response(messages):
     if len(messages) <= 1:
         messages.insert(0, CHAT_THEME)
 
-    chat = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo", messages=messages
-            )
+    chat = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
     reply = chat.choices[0].message.content
     messages.append({"role": "assistant", "content": reply})
     return messages
@@ -24,10 +23,8 @@ def main():
             messages.append(
                 {"role": "user", "content": message},
             )
-            chat = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo", messages=messages
-            )
-        
+            chat = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
+
         reply = chat.choices[0].message.content
         print(f"ChatGPT: {reply}")
         messages.append({"role": "assistant", "content": reply})

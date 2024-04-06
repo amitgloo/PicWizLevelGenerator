@@ -42,11 +42,13 @@ async def generate_img_response(request: Request):
     try:
         prompt = await request.json()
 
+        logger.info(prompt)
+
         if not prompt:
             raise ValueError("Prompt cannot be empty.")
 
         # Call the ChatGPT API to generate the response
-        response = get_create_image(prompt)
+        response = get_create_image(prompt['prompt'])
 
         return JSONResponse(content=response, status_code=200)
 

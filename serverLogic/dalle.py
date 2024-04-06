@@ -1,21 +1,29 @@
-import openai
+from settings import API_KEY
+from openai import OpenAI
+
 import urllib.request
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import os
-from settings import API_KEY
+import logging
+import uvicorn
 
-openai.api_key = API_KEY
-PROMPT = "student with GAMT 760 score smiling. You can see the smile and the score"
+logger = logging.getLogger("uvicorn")
+
+client = OpenAI(api_key=API_KEY)
+
+OPTION_MODELS = ["gpt-4-vision-preview", "dall-e-3"]
 
 def get_create_image(prompt):
-    response = openai.Image.create(
-        prompt=prompt,
-        n=1,
-        size="256x256",
-    )
+    response = client.images.generate(prompt=prompt,
+    n=1,
+    size="1024x1024",
+    quality="standard",
+    model= "dall-e-3")
 
-    url = response["data"][0]["url"]
+    logger.info(response.data)
+    logger.info(response.data[0])
+    url = response.data[0].url
     return url
 
 def present_image(url):
@@ -28,7 +36,7 @@ def present_image(url):
 def main():
     while True:
         prompt = input("Prompt: ")
-        url = create_image(prompt)
+        url = get_create_image(prompt)
         present_image(url)
 
 if __name__ == "__main__":

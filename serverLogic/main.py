@@ -5,7 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from httpx import AsyncClient
 import logging
 from chatgpt import get_chat_gpt_response
-from dalle import get_create_image
+from openai_endpoint import get_create_image
+from goapi_endpoint import get_midjourney_image
 import uvicorn
 
 logger = logging.getLogger("uvicorn")
@@ -41,14 +42,17 @@ async def generate_chat(request: Request):
 async def generate_img_response(request: Request):
     try:
         prompt = await request.json()
-
         logger.info(prompt)
 
         if not prompt:
             raise ValueError("Prompt cannot be empty.")
 
-        # Call the ChatGPT API to generate the response
-        response = get_create_image(prompt['prompt'])
+        if prompt["engine"] == "OpenAI":
+            # Call the ChatGPT API to generate the response
+            response = get_create_image(prompt['prompt'])
+        elif prompt["engine"] == "Midjourney":
+            # Call the GoAPI to MidJourney to generate the response
+            response = get_midjourney_image(prompt['prompt'])
 
         return JSONResponse(content=response, status_code=200)
 

@@ -16,12 +16,12 @@
               <select id="AI-Engine" data-trigger="" name="choices-single-default">
                 <option placeholder="Open AI">OpenAI</option>
                 <option>Midjourney</option>
-                <option>Gemini</option>
+                <!-- <option>Gemini</option> -->
               </select>
             </div>
           </div>
           <div class="input-field second-wrap">
-            <input id="prompt-input" type="text" placeholder="Enter Level Prompt..." />
+            <input id="prompt-input" type="text" placeholder="Enter level prompt..." />
           </div>
           <div class="input-field third-wrap">
             <button id="search" class="btn-search" type="submit">
@@ -32,28 +32,16 @@
           </div>
         </div>
       </form>
+      <div id="loader" class="loader" hidden></div>
       <div class="picture-rows">
         <div class="column">
-          <a id="link-out-pic-1" href="images/test_image.png" download="dog.png">
-            <img class="generated-image" id="out-pic-1" src="images/test_image.png" alt="">
-          </a>
-          <a id="link-out-pic-2" href="images/test_image.png" download="dog.png">
-            <img class="generated-image" id="out-pic-2" src="images/test_image.png" alt="">
-          </a>
-          <a id="link-out-pic-3" href="images/test_image.png" download="dog.png">
-            <img class="generated-image" id="out-pic-3" src="images/test_image.png" alt="">
-          </a>
-          </div>
-        <div class="column">
-          <a id="link-out-pic-4" href="images/test_image.png" download="dog.png">
-            <img class="generated-image" id="out-pic-4" src="images/test_image.png" alt="">
-          </a>
-          <a id="link-out-pic-5" href="images/test_image.png" download="dog.png">
-            <img class="generated-image" id="out-pic-5" src="images/test_image.png" alt="">
-          </a>
-          <a id="link-out-pic-6" href="images/test_image.png" download="dog.png">
-            <img class="generated-image" id="out-pic-6" src="images/test_image.png" alt="">
-          </a>
+          <img class="generated-image" id="out-pic-1" src="images/glue.webp" alt="">
+          <img class="generated-image" id="out-pic-2" src="images/glue.webp" alt="">
+          <img class="generated-image" id="out-pic-3" src="images/glue.webp" alt="">
+          <div class="column">
+          <img class="generated-image" id="out-pic-4" src="images/glue.webp" alt="">
+          <img class="generated-image" id="out-pic-5" src="images/glue.webp" alt="">
+          <img class="generated-image" id="out-pic-6" src="images/glue.webp" alt="">
         </div>
       </div>
     </div>

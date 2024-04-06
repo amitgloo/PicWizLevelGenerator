@@ -2,8 +2,6 @@ from settings import API_KEY
 from openai import OpenAI
 
 import urllib.request
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import os
 import logging
 import uvicorn
@@ -25,19 +23,3 @@ def get_create_image(prompt):
     logger.info(response.data[0])
     url = response.data[0].url
     return url
-
-def present_image(url):
-    os.remove("image.png")
-    urllib.request.urlretrieve(url, "image.png")
-    img = mpimg.imread('image.png')
-    plt.imshow(img)
-    plt.show()
-
-def main():
-    while True:
-        prompt = input("Prompt: ")
-        url = get_create_image(prompt)
-        present_image(url)
-
-if __name__ == "__main__":
-    main()

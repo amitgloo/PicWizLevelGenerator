@@ -3,16 +3,23 @@ from openai import OpenAI
 
 client = OpenAI(api_key=API_KEY)
 
-
 def get_chat_gpt_response(messages):
     if len(messages) <= 1:
         messages.insert(0, CHAT_THEME)
 
-    chat = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
+    chat = client.chat.completions.create(model="gpt-4-0125-preview", messages=messages)
     reply = chat.choices[0].message.content
     messages.append({"role": "assistant", "content": reply})
     return messages
 
+def get_chat_gpt_prompt(level_caption):
+    messages = [{"role": "user", "content": level_caption}]
+    messages.insert(0, CHAT_THEME)
+
+    chat = client.chat.completions.create(model="gpt-4-0125-preview", messages=messages)
+    reply = chat.choices[0].message.content
+    messages.append({"role": "assistant", "content": reply})
+    return reply
 
 def main():
     messages = [CHAT_THEME]
@@ -23,7 +30,7 @@ def main():
             messages.append(
                 {"role": "user", "content": message},
             )
-            chat = client.chat.completions.create(model="gpt-3.5-turbo", messages=messages)
+            chat = client.chat.completions.create(model="gpt-4-0125-preview", messages=messages)
 
         reply = chat.choices[0].message.content
         print(f"ChatGPT: {reply}")

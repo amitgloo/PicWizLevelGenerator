@@ -1145,3 +1145,35 @@ legend {
         calc(-5*var(--w)) -20px #0000,calc(-6*var(--w)) -20px #0000,calc(-7*var(--w)) -20px #0000,calc(-8*var(--w)) -20px #0000,calc(-9*var(--w)) -20px #0000;
   }
 }
+
+
+textarea {
+  width: 400px;
+  height: 200px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-size: 16px;
+  resize: none;
+}
+
+h1 {
+  font-size: 7rem;
+  align-items: center;
+  font-family: monospace, monospace;
+  text-align: center;
+  color: #354556;
+}
+
+.full-level-title {
+  font-size: 2rem;
+  align-items: center;
+  font-family: monospace, monospace;
+  text-align: center;
+  color: #354556;
+  display: flex;
+  width: 40rem;
+  flex-direction: column;
+}

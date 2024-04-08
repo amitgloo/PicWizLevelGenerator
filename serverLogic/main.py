@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from httpx import AsyncClient
 import logging
-from chatgpt import get_chat_gpt_response
+from chatgpt import get_chat_gpt_response, get_chat_gpt_prompt
 from openai_endpoint import get_create_image
 from goapi_endpoint import get_midjourney_image
 import uvicorn
@@ -21,7 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/generate-text/")
+@app.post("/generate-prompt/")
 async def generate_chat(request: Request):
     try:
         prompt = await request.json()
@@ -30,7 +30,7 @@ async def generate_chat(request: Request):
             raise ValueError("Prompt cannot be empty.")
 
         # Call the ChatGPT API to generate the response
-        response = get_chat_gpt_response(prompt)
+        response = get_chat_gpt_prompt(prompt['prompt'])
 
         return JSONResponse(content=response, status_code=200)
 

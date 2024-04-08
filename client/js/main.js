@@ -1,39 +1,48 @@
 "use strict";
-let textMessages = []
 // let gptAnswer = d.getElementById("gpt-answer");
 const SERVER_URL = "http://localhost:8000"
 const d = document;
 
-// function update_html(url, imageIndex, prompt){
-//     fetch(url)
-//         .then(response => response.blob())
-//         .then(image => {
-//                 var demoPic = d.getElementById("link-out-pic-"+imageIndex)
-//                 var imageSrc = URL.createObjectURL(image)  
-//                 demoPic.download = prompt+".png"
-//                 demoPic.href = imageSrc
-//     })
-// }
+function logMessage(message) {
+    const logger = d.getElementById("logger-display")
+    var logContent = logger.textContent
+    console.log(logContent)
 
-function get_prompt_ai(engine, prompt, called, total_calls, loader) {
+    if (logContent.length == 0) {
+        logger.textContent = message
+    } else {
+        logger.textContent = logContent + "\n" + message
+    }
+
+    logger.scrollTop = logger.scrollHeight;
+}
+
+function get_prompt_ai(levelGenerator, prompt, called, total_calls, loader) {
     if (called >= total_calls) {
-        loader.turnLoaderOff()
+        // loader.turnLoaderOff()
+        logMessage("Start generating images...")
+        get_image_from_prompts(levelGenerator, 0, loader)
         return;
     }
     
     loader.updateLoader(called, total_calls)
+    logMessage("("+called+"/"+total_calls+") - prompt generation...")
     
     fetch(SERVER_URL + "/generate-prompt/", {
         method: 'POST',
-        body: JSON.stringify({engine, prompt})
-    })
+        body: JSON.stringify({
+            "engine": levelGenerator.engine,
+            "prompt": prompt})
+        })
     .then((response) => response.json())
     .then((out_prompt) => {
-        called++
         console.log(out_prompt)
-        var demoPic = d.getElementById("prompt-area-"+called)
-        demoPic.textContent = out_prompt
-        get_prompt_ai(engine, prompt, called, total_calls, loader)
+        // var demoPic = d.getElementById("prompt-area-"+called)
+        // demoPic.textContent = out_prompt
+        logMessage("\nprompt #"+called+": "+out_prompt+"\n")
+        called++
+        levelGenerator.prompts.push(prompt)
+        get_prompt_ai(levelGenerator, prompt, called, total_calls, loader)
     })
     .catch(error => {
         // Error occurred during the fetch
@@ -41,78 +50,38 @@ function get_prompt_ai(engine, prompt, called, total_calls, loader) {
     });
 }
 
-function get_image_ai(engine, prompt, called, total_calls, loader) {
-    if (called >= total_calls) {
+function get_image_from_prompts(levelGenerator, index, loader) {
+    if (levelGenerator.prompts.length <= index) {
+        logMessage("Finished Successfullly!")
         loader.turnLoaderOff()
         return;
     }
-    
-    loader.updateLoader(called, total_calls)
+
+    loader.updateLoader(index, levelGenerator.prompts.length)
+    logMessage("("+index+"/"+levelGenerator.prompts.length+") - image generation...")
     
     fetch(SERVER_URL + "/generate-img/", {
         method: 'POST',
-        body: JSON.stringify({engine, prompt})
+        body: JSON.stringify({
+            "engine": levelGenerator.engine,
+            "prompt": levelGenerator.prompts[index]
+        })
     })
     .then((response) => response.json())
     .then((url) => {
-        called++
         console.log(url)
-        var demoPic = d.getElementById("out-pic-"+called)
+        var demoPic = d.getElementById("out-pic-"+index)
         demoPic.src = url
         demoPic.addEventListener("load", () => {
-            get_image_ai(engine, prompt, called, total_calls, loader)
+            get_image_from_prompts(levelGenerator, index+1, loader)
         })
     })
     .catch(error => {
         // Error occurred during the fetch
         console.error('Error submitting form data:', error);
     });
+
 }
-
-class Loader {
-    constructor(type) {
-        this.type = type
-    }
-    
-    turnLoaderOn(maxcount) {
-        const loader = d.getElementById("loader-div-id")
-        const loaderStatus = d.getElementById("progress-status")
-        loaderStatus.textContent = "(1/"+maxcount+") "
-        loader.style.display = "flex"
-    }
-    
-    updateLoader(count, maxcount) {
-        const loaderStatus = d.getElementById("progress-status")
-        loaderStatus.textContent = "("+count+"/"+maxcount+") "
-    }
-    
-    turnLoaderOff() {
-        const loader = d.getElementById("loader-div-id")
-        loader.style.display = "none"
-    }
-    
-}
-
-const askImageAI = d.getElementById("ask-ai")
-askImageAI.addEventListener("submit", (e) => {
-    e.preventDefault();
-    
-    // handle submit
-    const engine = d.getElementById("AI-Engine").value
-    const imageCount = d.getElementById("image-count").value
-    if (engine.toLowerCase() == "model" || imageCount.toLowerCase() == "count") {
-        return
-    }
-    const prompt = d.getElementById("prompt-input").value
-    var loader = new Loader()
-    loader.turnLoaderOn(imageCount)
-    
-    console.log("Engine: " + engine)
-    console.log("Prompt: " + prompt)
-    
-    get_image_ai(engine, prompt, 0, imageCount, loader)
-});
-
 
 const askGenPromptAI = d.getElementById("gen-prompts-form")
 askGenPromptAI.addEventListener("submit", (e) => {
@@ -124,14 +93,25 @@ askGenPromptAI.addEventListener("submit", (e) => {
     if (engine.toLowerCase() == "model" || promptCount.toLowerCase() == "count") {
         return
     }
-    const prompt = d.getElementById("gen-prompt-input").value
+    const levelPrompt = d.getElementById("gen-prompt-input").value
     var loader = new Loader()
     loader.turnLoaderOn(promptCount)
     
+    const levelTitle = d.getElementById("current-level")
+    levelTitle.textContent = levelPrompt
+
     console.log("Engine: " + engine)
-    console.log("Prompt: " + prompt)
+    console.log("Prompt: " + levelPrompt)
+
+    logMessage("Chosen engine: " + engine)
+    logMessage("# of images: " + promptCount)
+    logMessage("Level prompt: " + levelPrompt)
+
+    return
     
-    get_prompt_ai(engine, prompt, 0, promptCount, loader)
+    var levelGenerator = new LevelGenerator(engine)
+
+    get_prompt_ai(levelGenerator, levelPrompt, 0, promptCount, loader)
 });
 
 // Using fetch
@@ -164,3 +144,34 @@ buttons.forEach((button) => {
 });
 
 
+//-------- class defs ---------//
+
+class Loader {
+    constructor(type) {
+        this.type = type
+    }
+    
+    turnLoaderOn(maxcount) {
+        const loader = d.getElementById("loader-div-id")
+        const loaderStatus = d.getElementById("progress-status")
+        loaderStatus.textContent = "(1/"+maxcount+") "
+        loader.style.display = "flex"
+    }
+    
+    updateLoader(count, maxcount) {
+        const loaderStatus = d.getElementById("progress-status")
+        loaderStatus.textContent = "("+count+"/"+maxcount+") "
+    }
+    
+    turnLoaderOff() {
+        const loader = d.getElementById("loader-div-id")
+        loader.style.display = "none"
+    }
+}
+
+class LevelGenerator {
+    constructor(engine) {
+        this.prompts = []
+        this.engine = engine
+    }
+}

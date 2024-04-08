@@ -1,4 +1,4 @@
-from settings import GO_API_KEY
+from serverLogic.settings import GO_API_KEY
 import requests
 import uvicorn
 import logging

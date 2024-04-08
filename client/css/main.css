@@ -1177,3 +1177,18 @@ h1 {
   width: 40rem;
   flex-direction: column;
 }
+
+#logger-display {
+  width: 35rem;
+  max-height: 10rem;
+  padding: 12px 20px;
+  background-color: #354556;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  color: #f8f8f8;
+  font-size: 16px;
+  letter-spacing: .1em;
+  resize: none;
+  line-height: 1.3;
+}

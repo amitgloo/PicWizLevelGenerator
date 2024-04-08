@@ -1,4 +1,4 @@
-from settings import API_KEY
+from serverLogic.settings import API_KEY
 from openai import OpenAI
 
 import urllib.request

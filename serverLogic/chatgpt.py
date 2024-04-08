@@ -1,4 +1,4 @@
-from settings import API_KEY, CHAT_THEME
+from serverLogic.settings import API_KEY, CHAT_THEME
 from openai import OpenAI
 
 client = OpenAI(api_key=API_KEY)

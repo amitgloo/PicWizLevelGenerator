@@ -868,11 +868,15 @@ legend {
   -ms-flex-align: center;
       align-items: center;
   box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.15);
-  border-radius: 3px;
+  /* border-radius: 3px; */
 }
 
 .s003 form .inner-form .input-field {
   height: 68px;
+}
+
+.s003 form .inner-form .addon {
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .s003 form .inner-form .input-field input {
@@ -908,7 +912,7 @@ legend {
 }
 
 .s003 form .inner-form .input-field.first-wrap {
-  width: 200px;
+  width: 150px;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
 

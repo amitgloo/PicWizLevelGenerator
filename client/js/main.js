@@ -26,8 +26,8 @@ level output: A tattoo of a turtle on the neck
 
 from now on I will query with a caption and you should only responsd with a level output
 `
-const OPENAI_API_KEY="";
-const GOAPI_KEY = "";
+var OPENAI_API_KEY="";
+var GOAPI_KEY = "";
 
 function fetch_img(task_id, levelGenerator, index, loader, callback) {
     fetch("https://api.midjourneyapi.xyz/mj/v2/fetch", {
@@ -154,6 +154,11 @@ const askGenPromptAI = d.getElementById("gen-prompts-form")
 askGenPromptAI.addEventListener("submit", (e) => {
     e.preventDefault();
     
+    OPENAI_API_KEY=d.getElementById("openai-key").value
+    GOAPI_KEY=d.getElementById("goapi-key").value
+
+    logMessage("Using OPENAI_API_KEY: "+OPENAI_API_KEY)
+    logMessage("Using GOAPI_KEY: "+GOAPI_KEY)
     // handle submit
     const engine = d.getElementById("gen-target-model").value
     const promptCount = d.getElementById("gen-prompts-count").value
@@ -168,7 +173,7 @@ askGenPromptAI.addEventListener("submit", (e) => {
     levelTitle.textContent = levelPrompt
 
     logMessage("Chosen engine: " + engine)
-    logMessage("# of images: " + promptCount)
+    logMessage("Number of images: " + promptCount)
     logMessage("Level prompt: " + levelPrompt)
 
     var levelGenerator = new LevelGenerator(engine)

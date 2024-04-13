@@ -1,4 +1,4 @@
-from serverLogic.settings import API_KEY
+from serverLogic.settings import API_KEY, CHAT_THEME
 from openai import OpenAI
 
 import urllib.request

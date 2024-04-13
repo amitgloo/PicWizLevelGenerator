@@ -6,7 +6,7 @@
 ## Install Server
 
 ```
-pip3.9 install fastapi httpx openai matplotlib uvicorn requests
+pip3.9 install fastapi httpx openai matplotlib uvicorn requests pandas openpyxl
 ```
 
 ## Run Server

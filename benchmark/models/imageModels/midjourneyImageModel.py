@@ -28,6 +28,9 @@ class MidJourneyImageModel:
             if result["status"] == "finished":
                 return result["task_result"]["image_url"]
             
+            if result["status"] == "failed":
+                raise Exception("Failed create image")
+            
             # Polling for result
             logger.info(f"Status: {result['status']}, retrying in 5 seconds...")
             time.sleep(5)

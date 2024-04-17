@@ -14,7 +14,20 @@ import openpyxl
 import time
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+logger.setLevel(logging.DEBUG)
+
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
+# logging.basicConfig(filename="./benchmark/results/current_test_log.txt",
+#                     filemode='w',
+#                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+#                     datefmt='%H:%M:%S',
+#                     level=logging.INFO)
 
 class Benchmark:
     def __init__(self, level_captions, prompt_models, image_models, results_dir, results_documentation):
@@ -24,26 +37,38 @@ class Benchmark:
         self.results_documentation = results_documentation
         self.results_dir = results_dir
         self.global_id = 0
+        self.result_dirs = {}
     
     def run(self):
         for prompt_model in self.prompt_models:
-            for image_model in self.image_models:
-                output_dir = self.create_results_dir(prompt_model, image_model)
-                for level_caption in self.level_captions:
-                    self.run_iteration(level_caption, prompt_model, image_model, output_dir)
+            self.create_results_dir(prompt_model)
+            for level_caption in self.level_captions:
+                for image_model in self.image_models:
+                    output_dir = self.result_dirs[str(image_model)]
+                    try:
+                        image_prompt = prompt_model.generate_image_prompt(level_caption)
+                        self.run_iteration(level_caption, prompt_model, image_model, image_prompt, output_dir)
+                    except Exception:
+                        logger.info(f"""Failed to generate entry:
+                                    level_caption: {level_caption},
+                                    prompt_model: {prompt_model},
+                                    image_model: {image_model},
+                                    prompt: {image_prompt},
+                                    """)
+                self.global_id += 1
 
-    def create_results_dir(self, prompt_model, image_model):
+    def create_results_dir(self, prompt_model):
         base_model_result = os.path.join(self.results_dir, str(prompt_model)) 
         if not os.path.isdir(base_model_result):
             os.mkdir(base_model_result)
 
-        full_result_path = os.path.join(base_model_result, str(image_model))
-        if not os.path.isdir(full_result_path):
-                os.mkdir(full_result_path)
+        for image_model in self.image_models:
+            full_result_path = os.path.join(base_model_result, str(image_model))
+            if not os.path.isdir(full_result_path):
+                    os.mkdir(full_result_path)
+            self.result_dirs[str(image_model)] = full_result_path
 
-        return full_result_path
-
-    def run_iteration(self, level_caption, prompt_model, image_model, output_dir):
+    def run_iteration(self, level_caption, prompt_model, image_model, image_prompt, output_dir):
         logger.info(f"""Running - 
                     level_caption: {level_caption},
                     Prompt Model: {prompt_model},
@@ -53,7 +78,6 @@ class Benchmark:
             "Prompt Model": [prompt_model],
             "Image Model": [image_model]
         }
-        image_prompt = prompt_model.generate_image_prompt(level_caption)
         new_entry["Image Prompt"] = [image_prompt]
         image_url = image_model.generate_image(image_prompt)
         # new_entry["image_url"] = image_url
@@ -74,7 +98,6 @@ class Benchmark:
             outfile.write(r.content)
 
         self.log_output(new_entry)
-        self.global_id += 1
     
     def log_output(self, new_entry):
         df_new = pd.DataFrame(new_entry)
@@ -92,6 +115,9 @@ if __name__ == "__main__":
     output_doc = Path.joinpath(result_path, "results.xlsx")
     if output_doc.is_file():
         raise Exception(f"Cannot override existing results.xlsx! (path: {output_doc})")
+    
+    FileOutputHandler = logging.FileHandler(Path.joinpath(result_path, "test_log.log"))
+    logger.addHandler(FileOutputHandler)
    
     df = pd.DataFrame([['<caption>',
                         '<prompt model>',

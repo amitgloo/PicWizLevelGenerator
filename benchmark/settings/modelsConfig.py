@@ -31,3 +31,4 @@ from now on I will query with a caption and you should only responsd with a leve
 """
 OPENAI_PROMPT_MODEL_THEME = {"role": "system", "content": OPENAI_PROMPT_MODEL_THEME_CONTEXT}
 
+OPENAI_BACKGROUND_MODEL_PROMPT = "add solid background."

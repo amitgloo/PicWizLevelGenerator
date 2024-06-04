@@ -1,4 +1,4 @@
-from benchmark.settings.levelConfigs import LEVEL_CAPTIONS
+from benchmark.settings.levelConfigs import LEVEL_CAPTIONS, NEW_LEVEL_CAPTIONS_BY_CATEGORY
 
 from benchmark.models.promptModels.openaiPromptModel import openai_prompt_model
 from benchmark.models.imageModels.openaiImageModel import openai_image_model
@@ -42,19 +42,29 @@ class Benchmark:
     def run(self):
         for prompt_model in self.prompt_models:
             self.create_results_dir(prompt_model)
-            for level_caption in self.level_captions:
-                for image_model in self.image_models:
-                    output_dir = self.result_dirs[str(image_model)]
-                    try:
-                        image_prompt = prompt_model.generate_image_prompt(level_caption)
-                        self.run_iteration(level_caption, prompt_model, image_model, image_prompt, output_dir)
-                    except Exception:
-                        logger.info(f"""Failed to generate entry:
-                                    level_caption: {level_caption},
-                                    prompt_model: {prompt_model},
-                                    image_model: {image_model},
-                                    prompt: {image_prompt},
-                                    """)
+            for level_category, level_captions in self.level_captions.items():
+                for level_caption in level_captions:
+                    for image_model in self.image_models:
+                        output_dir = self.result_dirs[str(image_model)]
+                        try:
+                            image_prompt = prompt_model.generate_image_prompt(level_caption)
+                            self.run_iteration(level_category, level_caption, prompt_model, image_model, image_prompt, output_dir)
+                        except Exception:
+                            if image_prompt:
+                                logger.info(f"""Failed to generate entry:
+                                            level_category: {level_category},
+                                            level_caption: {level_caption},
+                                            prompt_model: {prompt_model},
+                                            image_model: {image_model},
+                                            prompt: {image_prompt},
+                                            """)
+                            else:
+                                logger.info(f"""Failed to generate entry:
+                                            level_category: {level_category},
+                                            level_caption: {level_caption},
+                                            prompt_model: {prompt_model},
+                                            image_model: {image_model},
+                                            """)
                 self.global_id += 1
 
     def create_results_dir(self, prompt_model):
@@ -68,7 +78,7 @@ class Benchmark:
                     os.mkdir(full_result_path)
             self.result_dirs[str(image_model)] = full_result_path
 
-    def run_iteration(self, level_caption, prompt_model, image_model, image_prompt, output_dir):
+    def run_iteration(self, level_category, level_caption, prompt_model, image_model, image_prompt, output_dir):
         logger.info(f"""Running - 
                     level_caption: {level_caption},
                     Prompt Model: {prompt_model},
@@ -81,10 +91,11 @@ class Benchmark:
         new_entry["Image Prompt"] = [image_prompt]
         image_url = image_model.generate_image(image_prompt)
         # new_entry["image_url"] = image_url
-        image_dest = Path(os.path.join(output_dir, "".join([level_caption, " id ", str(self.global_id), ".png"])))
+        image_dest = Path(os.path.join(output_dir, "".join([level_category, " - ", level_caption, " id ", str(self.global_id), ".png"])))
         new_entry["Image Path"] = [image_dest.relative_to(self.results_dir)]
         new_entry["Image Filename"] = image_dest.name
         logger.info(f"""Finished
+                    level_category: {level_category},
                     level_caption: {level_caption},
                     prompt_model: {prompt_model},
                     image_model: {image_model},
@@ -135,9 +146,10 @@ if __name__ == "__main__":
     df.to_excel(output_doc, index=False)
 
     benchmark_model = Benchmark(
-        LEVEL_CAPTIONS,
+        # LEVEL_CAPTIONS,
+        NEW_LEVEL_CAPTIONS_BY_CATEGORY,
         [openai_prompt_model],
-        [openai_image_model, midjourney_image_model],
+        [openai_image_model],
         result_path,
         output_doc)
 

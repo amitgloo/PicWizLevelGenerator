@@ -1,6 +1,13 @@
 # ---------------------------- Keys ---------------------------- #
+from dotenv import dotenv_values
+import os
 
-OPENAI_API_KEY = ""
+config = {
+    **dotenv_values(".env"),
+    **os.environ # Override with environment variables
+}
+
+OPENAI_API_KEY = config["OPENAI_KEY"]
 GOAPI_X_KEY = ""
 
 # ---------------------------- Configs ---------------------------- #
@@ -27,6 +34,8 @@ level output: A Mac computer with a slice of cheese on the side
 caption: turtleneck
 level output: A tattoo of a turtle on the neck
 
+The best captions are descriptions of images that can embody the caption.
+Please stick to the facts - try to create accurate representation.
 from now on I will query with a caption and you should only responsd with a level output
 """
 OPENAI_PROMPT_MODEL_THEME = {"role": "system", "content": OPENAI_PROMPT_MODEL_THEME_CONTEXT}

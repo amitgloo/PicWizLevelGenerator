@@ -1,4 +1,4 @@
-import { UseFormRegister, UseFormRegisterReturn } from 'react-hook-form';
+import { UseFormRegister } from 'react-hook-form';
 import {  Handle, Position, type NodeProps } from 'reactflow';
 
 export interface InputNodeProps {

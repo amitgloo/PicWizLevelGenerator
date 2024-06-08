@@ -1,7 +1,7 @@
-import { BaseEdge, EdgeLabelRenderer, EdgeProps, EdgeText, MarkerType, Position, getBezierPath, getSimpleBezierPath, getSmoothStepPath } from "reactflow";
+import { BaseEdge, EdgeProps, EdgeText, Position, getSmoothStepPath } from "reactflow";
 
 export function HumanFeedbackEdge({ id, sourceX, sourceY, targetX, targetY, markerEnd, style }: EdgeProps) {
-    const [edgePath, labelX, labelY ] = getSmoothStepPath({
+    const [edgePath ] = getSmoothStepPath({
         sourceX,
         sourceY,
         targetX,

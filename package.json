@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1",
-      "start": "python3.9 -m uvicorn main:app --reload"
+      "start": "cd client && npm run build && cd .. && uvicorn main:app --reload"
     }
   }
   

@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from httpx import AsyncClient
+
 import logging
 from serverLogic.chatgpt import get_chat_gpt_response, get_chat_gpt_prompt
 from serverLogic.openai_endpoint import get_create_image
@@ -21,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/", StaticFiles(directory="client",html = True), name="static")
+app.mount("/", StaticFiles(directory="./client/dist",html = True), name="static")
 
 @app.post("/generate-prompt/")
 async def generate_chat(request: Request):

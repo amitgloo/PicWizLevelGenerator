@@ -1,7 +1,7 @@
 import type { OnConnect } from "reactflow";
 import { MagicWandIcon } from '@radix-ui/react-icons';
 
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import {
   Background,
   Controls,

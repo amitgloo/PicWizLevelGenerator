@@ -85,7 +85,7 @@ export const getInitialNodes = (register: any) => [
     },
     position: {
       x: i * 350,
-      y: i * (-40),
+      y: i * (-100),
     }
   }))
 ] satisfies Node[];

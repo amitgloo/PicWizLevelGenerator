@@ -19,11 +19,7 @@ import "reactflow/dist/style.css";
 import { getInitialNodes, nodeTypes } from "./nodes";
 import { edgeTypes, getInitialEdges } from "./edges";
 import { useForm } from "react-hook-form";
-
-function processPipeline(e: object) {
-  console.log("Input to Model")
-  console.log(e)
-}
+import { processPipeline } from "./interface";
 
 export default function App() {
   const { register, handleSubmit } = useForm();

@@ -18,46 +18,33 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["*", "POST"],
     allow_headers=["*"],
 )
 
-app.mount("/", StaticFiles(directory="./client/dist",html = True), name="static")
+app.mount("/static", StaticFiles(directory="./client/dist",html = True), name="static")
 
-@app.post("/generate-prompt/")
-async def generate_chat(request: Request):
+@app.post("/generate-text/")
+async def pipeline(request: Request):
     try:
-        prompt = await request.json()
+        context = await request.json()
 
-        if not prompt:
+        if not context:
             raise ValueError("Prompt cannot be empty.")
 
+        print("----------------------------------------------------------------")
+        print(context)
+        print("----------------------------------------------------------------")
+
+        # Log the received data for debugging purposes
+        logger.info(f"Received data: {context}")
+        # Add your processing logic here
+        return {"message": "Data received successfully", "data": context}
         # Call the ChatGPT API to generate the response
-        response = get_chat_gpt_prompt(prompt['prompt'])
+        response = get_chat_gpt_prompt(context)
 
         return JSONResponse(content=response, status_code=200)
 
     except Exception as e:
         logger.error(str(e))
-        return JSONResponse(content={"error": str(e)}, status_code=500)
-
-@app.post("/generate-img/")
-async def generate_img_response(request: Request):
-    try:
-        prompt = await request.json()
-        logger.info(prompt)
-
-        if not prompt:
-            raise ValueError("Prompt cannot be empty.")
-
-        if prompt["engine"] == "OpenAI":
-            # Call the ChatGPT API to generate the response
-            response = get_create_image(prompt['prompt'])
-        elif prompt["engine"] == "Midjourney":
-            # Call the GoAPI to MidJourney to generate the response
-            response = get_midjourney_image(prompt['prompt'])
-
-        return JSONResponse(content=response, status_code=200)
-
-    except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)

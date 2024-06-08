@@ -12,13 +12,14 @@ export interface InputNodeProps {
 
 export function InputNode({ data: {register, ...data} }: NodeProps<InputNodeProps>) {
     return (
-        <div style={{ padding: 10, borderWidth: 4, display: 'flex', flexDirection: 'column', border: '1px solid #ddd', borderRadius: 5, width: 250, height: 350 }}>
+        <div style={{ padding: 10, borderWidth: 4, display: 'flex', flexDirection: 'column', border: '2px solid #000000', borderRadius: 10, width: 250, height: 300, fontSize: "1.2rem" }}>
             <h4>{data.title}</h4>
             <p>{data.description}</p>
             {data.hasTextArea && <textarea
-                placeholder={data.placeholder}
+                // placeholder={data.placeholder}
+                value={data.placeholder}
                 {...register(data.title)}
-                style={{ width: '100%', height: '40%', marginTop: 'auto',  resize: 'none' }} />}
+                style={{ width: '100%', height: '50%', marginTop: 'auto',  resize: 'none' }}></textarea>}
             <Handle type='target' id='l' position={Position.Left}  />
             <Handle type='target' id='b' position={Position.Bottom} />
             <Handle type='source' id='b' position={Position.Bottom} />

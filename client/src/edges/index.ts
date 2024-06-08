@@ -1,4 +1,5 @@
-import type {Node, Edge, EdgeTypes, MarkerType } from "reactflow";
+import type {Node, Edge, EdgeTypes } from "reactflow";
+import { MarkerType } from "reactflow";
 import { HumanFeedbackEdge } from "./HumanFeedbackEdge";
 
 export function getInitialEdges(nodes: Node[]): Edge[] {
@@ -12,6 +13,13 @@ export function getInitialEdges(nodes: Node[]): Edge[] {
       source: nodes[i].id,
       sourceHandle: 'r',
       target: nodes[i+1].id,
+      style: {stroke: "black"},
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        width: 30,
+        height: 30,
+        color: 'black',
+      },
       targetHandle: 'l'
     })
     if (nodes[i].data.hasTextArea)
@@ -21,7 +29,14 @@ export function getInitialEdges(nodes: Node[]): Edge[] {
       target: nodes[i].id,
       id: `human-feedback-${i}`,
       sourceHandle: 'b',
+      style: {stroke: "black"},
       // label: "Human Feedback",
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        width: 40,
+        height: 40,
+        color: 'black',
+      },
       type: 'HumanFeedback',
       targetHandle: 'b'
     })

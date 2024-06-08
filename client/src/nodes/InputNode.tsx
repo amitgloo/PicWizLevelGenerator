@@ -12,8 +12,8 @@ export interface InputNodeProps {
 
 export function InputNode({ data: {register, ...data} }: NodeProps<InputNodeProps>) {
     return (
-        <div style={{ padding: 10, borderWidth: 4, display: 'flex', flexDirection: 'column', border: '2px solid #000000', borderRadius: 10, width: 250, height: 300, fontSize: "1.2rem" }}>
-            <h4>{data.title}</h4>
+        <div style={{ padding: 5, borderWidth: 4, display: 'flex', flexDirection: 'column', border: '2px solid #000000', borderRadius: 10, width: 250, height: 300, fontSize: "1.2rem" }}>
+            <h2 style={{margin: "0"}}>{data.title}</h2>
             <p>{data.description}</p>
             {data.hasTextArea && <textarea
                 // placeholder={data.placeholder}
